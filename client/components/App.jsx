@@ -1,25 +1,64 @@
-import React, { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import React, { useState } from 'react'
+import request from 'superagent'
+// .set('Content-Type', 'multipart/form-data')
 
-import { fetchFruits } from '../actions'
+function App() {
+  const [uploadImage, setUploadImage] = useState([])
+  const [photos, setPhotos] = useState([])
+  const [photoName, setPhotoName] = useState('')
 
-function App () {
-  const fruits = useSelector(state => state.fruits)
-  const dispatch = useDispatch()
-  useEffect(() => {
-    dispatch(fetchFruits())
-  }, [])
+  function onChange(event) {
+    setUploadImage(event.target.files[0])
+  }
+
+  function handleNameChange(event) {
+    setPhotoName(event.target.value)
+  }
+
+  function onSubmit() {
+    const formData = new FormData()
+    formData.append('photo', uploadImage)
+
+    return request
+      .post(`/${photoName}`)
+      .send(formData)
+      .then(() => {})
+  }
+
+  function onload() {
+    request
+      .get(`/${photoName}`)
+      .then((res) => {
+        setPhotos(res.body)
+      })
+      .catch(console.error)
+  }
 
   return (
     <>
-      <div className='app'>
-        <h1>Fullstack Boilerplate - with Fruits!</h1>
-        <ul>
-          {fruits.map(fruit => (
-            <li key={fruit}>{fruit}</li>
-          ))}
-        </ul>
-      </div>
+      <input
+        id="uploadFile"
+        type="file"
+        name="photo"
+        onChange={onChange}
+        encType="multipart/form-data"
+      />
+      <input
+        type="text"
+        name="name"
+        onChange={handleNameChange}
+        value={photoName}
+      />
+      <button onClick={onSubmit}>Submit</button>
+      <button onClick={onload}>load</button>
+
+      {photos.map((photo) => (
+        <img
+          key={photo.id}
+          src={`data:image/png;base64,${photo.image}`}
+          alt={photo.name}
+        />
+      ))}
     </>
   )
 }
