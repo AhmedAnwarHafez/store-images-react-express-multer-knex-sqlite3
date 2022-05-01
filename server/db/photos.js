@@ -1,11 +1,12 @@
 const connection = require('./connection')
 
-const addPhoto = (photoName, buffer, db = connection) => {
-  return db('photos').insert({ name: photoName, image: buffer })
+const addPhoto = (photo, db = connection) => {
+  const { name, mimetype, image } = photo
+  return db('photos').insert({ name, mimetype, image })
 }
 
 const getPhotoByName = (name, db = connection) => {
-  return db('photos').where('name', name).select('image')
+  return db('photos').where('name', name).select('image', 'mimetype')
 }
 
 module.exports = {

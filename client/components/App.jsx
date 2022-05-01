@@ -55,7 +55,7 @@ function App() {
       {photos.map((photo) => (
         <img
           key={photo.id}
-          src={`data:image/png;base64,${photo.image}`}
+          src={`data:${photo.mimetype};base64,${photo.image}`}
           alt={photo.name}
         />
       ))}

@@ -18,10 +18,13 @@ const upload = multer({
 })
 
 server.post('/:name', upload.single('photo'), async (req, res) => {
-  const photoName = req.params.name
-  const buffer = req.file.buffer
+  const photo = {
+    name: req.params.name,
+    mimetype: req.file.mimetype,
+    image: req.file.buffer,
+  }
   try {
-    await db.addPhoto(photoName, buffer)
+    await db.addPhoto(photo)
     res.sendStatus(201)
   } catch (error) {
     console.error(error)
@@ -36,6 +39,7 @@ server.get('/:name', (req, res) => {
         photos.map((photo) => ({
           id: photo.id,
           name: photo.name,
+          mimetype: photo.mimetype,
           image: photo.image.toString('base64'),
         }))
       )
